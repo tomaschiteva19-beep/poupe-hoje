@@ -1,1 +1,135 @@
-<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Realidade Financeira</title></head><body><h1>Teste</h1><p>Se você está lendo isso, funcionou!</p></body></html>
+HTML
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Realidade Financeira Pessoal - Poupe Hoje</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#070a10;color:#eaf0f6;font-family:Inter,sans-serif;padding:16px}
+.card{max-width:1100px;margin:0 auto 18px auto;background:#10151e;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px}
+h1{font-family:Space Grotesk,sans-serif;font-size:32px;line-height:1.1;margin:0 0 8px 0}
+.sub{color:#7c8aa0;font-size:14px;margin-bottom:18px}
+label{font-size:13px;color:#8b9bb0;display:block;margin:14px 0 6px 0}
+input[type=range]{width:100%;accent-color:#00f5c4;height:28px}
+.val{font-family:JetBrains Mono,monospace;font-weight:700;color:#fff}
+.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+.row.total{color:#00f5c4;font-weight:700;border-bottom:0;font-size:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.badge{display:inline-block;background:rgba(0,245,196,.12);border:1px solid rgba(0,245,196,.3);color:#00f5c4;border-radius:100px;padding:4px 10px;font-size:12px;font-family:JetBrains Mono,monospace}
+canvas{width:100%;height:300px;background:#0d121b;border-radius:14px;margin-top:14px}
+.big{font-family:Space Grotesk,sans-serif;font-size:22px}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>POUPE HOJE, <span style="background:linear-gradient(90deg,#00f5c4,#b026ff);-webkit-background-clip:text;color:transparent">GARANTA AMANHÃ</span></h1>
+<div class="sub">Coloca teu salário bruto. A app desconta automaticamente INSS 3% + IRT (tabela AGT 2025/2026) e mostra quanto te sobra para poupar.</div>
+
+<label>Rendimento mensal bruto: <span class="val" id="rendimentoVal">90 000 Kz</span></label>
+<input type="range" id="rendimento" min="30000" max="1500000" step="1000" value="90000">
+
+<div class="grid2" style="margin-top:16px">
+<div>
+<div class="row"><span>INSS (3% Segurança Social)</span><span id="inssVal">- 2 700 Kz</span></div>
+<div class="row"><span>IRT (tabela oficial AGT)</span><span id="irtVal">- 0 Kz</span></div>
+<div class="row total"><span>Rendimento líquido</span><span id="liquidoVal">0 Kz</span></div>
+</div>
+<div>
+<label>Despesas fixas + variáveis: <span class="val" id="despesaVal">50 000 Kz</span></label>
+<input type="range" id="despesa" min="0" max="1000000" step="500" value="50000">
+<div class="row total"><span>Sobra mensal</span><span id="sobraVal" class="big">0 Kz</span></div>
+<div style="margin-top:8px"><span class="badge" id="taxaPoup">Taxa poupança 0%</span></div>
+</div>
+</div>
+
+<div class="grid2">
+<div>
+<label>Quanto da sobra vais guardar? <span class="val" id="percVal">10%</span></label>
+<input type="range" id="perc" min="0" max="100" step="1" value="10">
+</div>
+<div>
+<label>Horizonte de investimento: <span class="val" id="anosVal">10 anos</span></label>
+<input type="range" id="anos" min="1" max="35" value="10">
+</div>
+</div>
+</div>
+
+<div class="card">
+<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center">
+<div><span style="color:#8b9bb0">Guardas por mês</span><br><span class="big val" id="guardaMes">0 Kz</span></div>
+<div><span style="color:#8b9bb0">Valor final estimado</span><br><span class="big" style="color:#00f5c4" id="valorFinal">0 Kz</span> <span style="color:#7c8aa0">em <span id="anosLabel">10</span> anos a 10% ano</span></div>
+</div>
+<canvas id="chart"></canvas>
+<div class="sub" style="margin-top:10px">Simulação juros compostos. 6% conservador, 10% equilibrado, 18% agressivo. Sem conselho financeiro.</div>
+</div>
+
+<script>
+function calculaIRT(rc){
+ if(rc<=70000) return 0;
+ if(rc<=100000) return 3000+(rc-70000)*0.10;
+ if(rc<=150000) return 6000+(rc-100000)*0.13;
+ if(rc<=200000) return 12500+(rc-150000)*0.16;
+ if(rc<=300000) return 20500+(rc-200000)*0.18;
+ if(rc<=500000) return 38500+(rc-300000)*0.19;
+ if(rc<=1000000) return 76500+(rc-500000)*0.20;
+ return 176500+(rc-1000000)*0.25;
+}
+const $=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('pt-AO').format(Math.round(n))+' Kz';
+const elR=$('rendimento'), elD=$('despesa'), elP=$('perc'), elA=$('anos');
+
+function update(){
+ const bruto=+elR.value;
+ const inss=bruto*0.03;
+ const colect=bruto-inss;
+ const irt=calculaIRT(colect);
+ const liquido=bruto-inss-irt;
+ elD.max=Math.max(1000,Math.floor(liquido));
+ const desp=Math.min(+elD.value,liquido);
+ const sobra=liquido-desp;
+ const perc=+elP.value;
+ const guarda=sobra*perc/100;
+ const anos=+elA.value;
+ const taxaAno=0.10;
+
+ $('rendimentoVal').textContent=fmt(bruto);
+ $('inssVal').textContent='- '+fmt(inss);
+ $('irtVal').textContent='- '+fmt(irt);
+ $('liquidoVal').textContent=fmt(liquido);
+ $('despesaVal').textContent=fmt(desp);
+ $('sobraVal').textContent=fmt(sobra);
+ $('percVal').textContent=perc+'%';
+ $('anosVal').textContent=anos+' anos';
+ $('anosLabel').textContent=anos;
+ $('guardaMes').textContent=fmt(guarda);
+ $('taxaPoup').textContent='Taxa poupança '+(liquido?Math.round(sobra/liquido*100):0)+'%';
+
+ const taxa=taxaAno/12;
+ const meses=anos*12;
+ const final=guarda*((Math.pow(1+taxa,meses)-1)/taxa||0);
+ $('valorFinal').textContent=fmt(final);
+
+ const c=$('chart'), ctx=c.getContext('2d');
+ const W=c.width=c.clientWidth*2, H=c.height=300*2;
+ ctx.clearRect(0,0,W,H);
+ ctx.strokeStyle='#1a2332'; ctx.lineWidth=2;
+ for(let i=0;i<=4;i++){ let y=20+(i/4)*(H-40); ctx.beginPath(); ctx.moveTo(20,y); ctx.lineTo(W-20,y); ctx.stroke(); }
+ ctx.strokeStyle='#00f5c4'; ctx.lineWidth=5; ctx.beginPath();
+ for(let i=0;i<=meses;i++){
+  let v=guarda*((Math.pow(1+taxa,i)-1)/taxa||0);
+  let x=20+(i/meses)*(W-40);
+  let y=H-20-(v/(final||1))*(H-40);
+  if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+ }
+ ctx.stroke();
+}
+[elR,elD,elP,elA].forEach(e=>e.addEventListener('input',update));
+update();
+</script>
+</body>
+</html>
