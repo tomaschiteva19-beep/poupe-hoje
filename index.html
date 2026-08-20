@@ -78,3 +78,67 @@ function update(){
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Realidade Financeira Pessoal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#070a10;color:#eaf0f6;font-family:Inter,sans-serif;padding:20px}
+.card{background:#10151e;border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:26px;margin-bottom:20px;max-width:1080px;margin:auto}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>POUPE HOJE</h1>
+<label>Rendimento: <span id="rendimentoVal"></span></label>
+<input type="range" id="rendimento" min="30000" max="1000000" value="90000">
+<div id="inssVal"></div>
+<div id="irtVal"></div>
+<div id="liquidoVal"></div>
+<label>Despesas: <span id="despesaVal"></span></label>
+<input type="range" id="despesa" min="0" max="900000" value="50000">
+<div id="sobraVal"></div>
+<label>Guardar: <span id="percVal"></span></label>
+<input type="range" id="perc" min="0" max="100" value="10">
+<label>Anos: <span id="anosVal"></span></label>
+<input type="range" id="anos" min="1" max="30" value="10">
+<h2><span id="guardaMes"></span> | <span id="valorFinal"></span></h2>
+<canvas id="chart"></canvas>
+</div>
+<script>
+function calculaIRT(rc){
+ if(rc<=70000) return 0;
+ if(rc<=100000) return 3000+(rc-70000)*0.10;
+ if(rc<=150000) return 6000+(rc-100000)*0.13;
+ if(rc<=200000) return 12500+(rc-150000)*0.16;
+ if(rc<=300000) return 20500+(rc-200000)*0.18;
+ if(rc<=500000) return 38500+(rc-300000)*0.19;
+ if(rc<=1000000) return 76500+(rc-500000)*0.20;
+ return 176500+(rc-1000000)*0.25;
+}
+const elR=document.getElementById('rendimento'),elD=document.getElementById('despesa'),elP=document.getElementById('perc'),elA=document.getElementById('anos');
+const fmt=n=>new Intl.NumberFormat('pt-AO').format(Math.round(n))+' Kz';
+function update(){
+ let bruto=+elR.value; let inss=bruto*0.03; let irt=calculaIRT(bruto-inss); let liq=bruto-inss-irt;
+ let desp=Math.min(+elD.value,liq); let sobra=liq-desp; let guarda=sobra*+elP.value/100; let anos=+elA.value;
+ document.getElementById('rendimentoVal').textContent=fmt(bruto);
+ document.getElementById('inssVal').textContent='INSS: -'+fmt(inss);
+ document.getElementById('irtVal').textContent='IRT: -'+fmt(irt);
+ document.getElementById('liquidoVal').textContent='Liquido: '+fmt(liq);
+ document.getElementById('despesaVal').textContent=fmt(desp);
+ document.getElementById('sobraVal').textContent='Sobra: '+fmt(sobra);
+ document.getElementById('percVal').textContent=elP.value+'%';
+ document.getElementById('anosVal').textContent=anos+' anos';
+ document.getElementById('guardaMes').textContent=fmt(guarda);
+ let taxa=0.10/12,meses=anos*12; let final=guarda*((Math.pow(1+taxa,meses)-1)/taxa||0);
+ document.getElementById('valorFinal').textContent=fmt(final);
+ const c=document.getElementById('chart'),ctx=c.getContext('2d'); const W=c.width=c.clientWidth*2,H=c.height=260*2;
+ ctx.clearRect(0,0,W,H); ctx.strokeStyle='#00f5c4'; ctx.lineWidth=4; ctx.beginPath();
+ for(let i=0;i<=meses;i++){let v=guarda*((Math.pow(1+taxa,i)-1)/taxa||0); let x=(i/meses)*(W-40)+20; let y=H-20-(v/(final||1))*(H-40); if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y);} ctx.stroke();
+}
+[elR,elD,elP,elA].forEach(e=>e.addEventListener('input',update));update();
+</script>
+</body>
+</html>
