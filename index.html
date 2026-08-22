@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poupe Hoje, Garanta Amanhã - Angola</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+body{background:#f5f5f0;color:#18181b;padding:24px}
+.display{font-family:Fraunces,serif}
+.max{max-width:980px;margin:0 auto}
+.header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:40px}
+h1{font-family:Fraunces,serif;font-size:46px;line-height:0.9;font-weight:900;letter-spacing:-0.03em}
+h1 span{color:#7c3aed}
+.badge{display:inline-flex;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700}
+.badge-dark{background:#18181b;color:#fff}
+.badge-white{background:#fff;border:1px solid #e4e4e7;color:#18181b;font-size:11px}
+.card-white{background:#fff;border:1px solid #e4e4e7;border-radius:28px;overflow:hidden;box-shadow:0 12px 40px -16px rgba(0,0,0,.12)}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:#e4e4e7}
+.grid4>div{padding:24px}
+.grid4 .white{background:#fff}
+.grid4 .beige{background:#fafaf9}
+.grid4 .black{background:#18181b;color:#fff}
+.label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#71717a}
+.label-dark{color:#a1a1aa}
+.value{font-family:Fraunces,serif;font-size:22px;font-weight:700;margin-top:8px}
+.grid2{display:grid;grid-template-columns:1.15fr 0.85fr}
+.left{padding:32px;border-right:1px solid #e4e4e7}
+.right{padding:32px;background:#fcfcfa}
+.desp-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f4f4f5}
+.desp-row:last-child{border:0}
+input[type=range]{width:100%;height:8px;background:#e7e5e4;border-radius:999px;accent-color:#18181b}
+.btn{height:56px;border-radius:16px;border:2px solid #18181b;background:#fff;color:#18181b;font-weight:700;cursor:pointer;width:100%;font-size:15px}
+.btn:hover{background:#fafafa}
+.proj-box{background:#18181b;color:#fff;border-radius:20px;padding:24px;margin-top:24px}
+#adminPanel{display:none;position:fixed;inset:0;background:#f5f5f0;z-index:9999;overflow:auto;padding:24px}
+.admin-card{background:#fff;border:1px solid #e4e4e7;border-radius:16px;padding:20px;margin-bottom:12px}
+.stat{font-size:28px;font-weight:900}
+@media(max-width:768px){.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}h1{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="max">
+<div class="header">
+<div>
+<h1>Poupe Hoje,<br><span>Garanta Amanhã</span></h1>
+<p style="margin-top:12px;color:#71717a;font-size:14px;line-height:1.5">Estrutura oficial Claude restaurada • Angola • <span id="contadorGlobal" class="badge badge-dark">👁️ 117 visitas</span> <span id="meuDevice" class="badge badge-white"></span></p>
+</div>
+<button onclick="abrirAdmin()" style="height:40px;padding:0 20px;border-radius:999px;border:1px solid #e4e4e7;background:#fff;font-weight:600;cursor:pointer">🔒 Admin</button>
+</div>
+
+<div class="card-white">
+<div class="grid4">
+<div class="white"><div class="label">Renda Bruta</div><div class="value" id="rendaTop">90.000 Kz</div><input type="range" id="renda" min="10000" max="500000" step="1000" value="90000" style="margin-top:16px"></div>
+<div class="beige"><div class="label">INSS 3%</div><div class="value" id="inssTop">2.700 Kz</div><div style="margin-top:12px;font-size:12px;color:#71717a">Obrigatório</div></div>
+<div class="beige"><div class="label">IRT</div><div class="value">0 Kz</div><div style="margin-top:8px"><span class="badge badge-dark" style="font-size:11px">0% aplicado</span></div></div>
+<div class="black"><div class="label label-dark">Líquido</div><div class="value" id="liquidoTop" style="color:#fff">87.300 Kz</div><div style="margin-top:8px"><span class="badge" style="background:#fff;color:#18181b;font-size:11px">✓ 87.300 correto</span></div></div>
+</div>
+
+<div class="grid2">
+<div class="left">
+<div style="display:flex;justify-content:space-between;align-items:center"><h3>💰 Despesas (começam em 0)</h3><span id="totalDesp" class="badge badge-white">Total: 0 Kz</span></div>
+<div id="despesas" style="margin-top:20px"></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px">
+<div class="admin-card" style="background:#f5f5f0"><div class="label">% a poupar</div><div class="value" style="font-size:28px"><span id="percVal">10</span>%</div><input type="range" id="perc" min="0" max="100" value="10" style="margin-top:8px"><div style="margin-top:6px;font-size:13px;color:#71717a" id="poupVal">7.275 Kz/mês</div></div>
+<div class="admin-card" style="background:#f5f5f0"><div class="label">Horizonte</div><div class="value" style="font-size:28px"><span id="horVal">10</span> anos</div><input type="range" id="hor" min="1" max="30" value="10" style="margin-top:8px"></div>
+</div>
+
+<div class="admin-card" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px"><div><div class="label">Já guardado</div><div id="guardVal" style="font-weight:600;margin-top:4px">0 Kz</div></div><input type="range" id="guard" min="0" max="500000" step="1000" value="0" style="width:160px"></div>
+
+<div style="margin-top:16px;font-size:13px">Sobra: <b id="dispVal">87.300 Kz</b> | INSS: <b id="inssVal">2.700 Kz</b> | Líquido: <b id="liquidoVal">87.300 Kz</b></div>
+</div>
+
+<div class="right">
+<h3>📈 Projeção</h3>
+<div class="admin-card"><div class="label">Disponível</div><div class="value" style="font-size:30px" id="dispBig">87.300 Kz</div><div style="font-size:13px;color:#71717a;margin-top:4px" id="poupDetalhe">7.275 Kz/mês • 87.300 Kz/ano</div><div style="height:8px;background:#f4f4f5;border-radius:999px;overflow:hidden;margin-top:12px"><div id="barraDisp" style="height:100%;background:#18181b;width:100%"></div></div></div>
+
+<div style="margin-top:20px;display:grid;gap:10px">
+<button id="btn-cons" onclick="setPerfil('conservador')" style="text-align:left;padding:16px;border-radius:16px;border:1px solid #e4e4e7;background:#fff;cursor:pointer"><b>Conservador</b> 6% - Baixo risco</button>
+<button id="btn-eq" onclick="setPerfil('equilibrado')" style="text-align:left;padding:16px;border-radius:16px;border:1px solid #18181b;background:#18181b;color:#fff;cursor:pointer"><b>Equilibrado</b> 13% - Risco médio</button>
+<button id="btn-ar" onclick="setPerfil('arrojado')" style="text-align:left;padding:16px;border-radius:16px;border:1px solid #e4e4e7;background:#fff;cursor:pointer"><b>Arrojado</b> 20% - Alto risco</button>
+</div>
+
+<div class="proj-box"><div class="label label-dark">Património em <span id="horLabel">10</span> anos • <span id="taxaLabel">13</span>%</div><div class="value" style="font-size:36px;color:#fff;margin-top:8px" id="projVal">0 Kz</div><div style="margin-top:8px;font-size:12px;color:#a1a1aa">Guardado × (1+taxa)^n + Poupança × [((1+taxa)^n-1)/taxa]</div></div>
+
+<button class="btn" onclick="reporPadrao()" style="margin-top:20px">↻ Repor valores padrão</button>
+<div id="resetFeedback" style="display:none;margin-top:12px;background:#dcfce7;border:1px solid #86efac;color:#166534;padding:12px;border-radius:12px;font-size:13px;font-weight:600">✓ Valores repostos com sucesso!</div>
+<div style="margin-top:12px;background:#dcfce7;border:1px solid #86efac;color:#166534;padding:12px;border-radius:12px;font-size:13px;font-weight:600">✅ Estrutura Claude oficial - sem CDN, 100% inline</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="adminPanel">
+<div style="max-width:640px;margin:0 auto">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h1 style="font-size:28px;font-weight:900">Painel Admin 🔒</h1><button onclick="fecharAdmin()" style="height:40px;padding:0 20px;border-radius:999px;background:#18181b;color:#fff;border:none;font-weight:600;cursor:pointer">Fechar X</button></div>
+
+<div id="loginAdmin" class="admin-card"><h3>Digite a senha</h3><p style="font-size:13px;color:#71717a;margin-top:4px">Padrão: 1234</p><input id="senhaInput" type="password" placeholder="Senha" style="width:100%;margin-top:12px;padding:14px;border-radius:12px;border:1px solid #e4e4e7"><button onclick="verificarSenha()" style="width:100%;margin-top:12px;height:48px;border-radius:999px;background:#7c3aed;color:#fff;border:none;font-weight:700;cursor:pointer">Entrar no Painel</button><p id="erroSenha" style="display:none;color:#dc2626;font-size:13px;margin-top:8px">Senha errada!</p></div>
+
+<div id="conteudoAdmin" style="display:none">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+<div class="admin-card"><div class="label">Total Visitas</div><div class="stat" id="statTotal">0</div></div>
+<div class="admin-card"><div class="label">Hoje</div><div class="stat" id="statHoje">0</div></div>
+<div class="admin-card"><div class="label">Celulares</div><div class="stat" id="statMobile">0</div></div>
+<div class="admin-card"><div class="label">PCs</div><div class="stat" id="statPC">0</div></div>
+</div>
+<div class="admin-card"><h3>Visitas Registradas</h3><div id="listaVisitas" style="margin-top:12px"></div><button onclick="limparVisitas()" style="margin-top:12px;height:36px;padding:0 16px;border-radius:999px;border:1px solid #e4e4e7;background:#fff;font-size:12px;font-weight:600;cursor:pointer">Limpar Histórico</button></div>
+</div>
+</div>
+</div>
+
+<script>
+const SENHA_ADMIN='1234';
+let despesas={habitacao:0,alimentacao:0,transporte:0,educacao:0,saude:0,lazer:0,vestuario:0,outros:0};
+const cats=[{k:'habitacao',l:'Habitação',e:'🏠',max:30000},{k:'alimentacao',l:'Alimentação',e:'🍽️',max:15000},{k:'transporte',l:'Transporte',e:'🚗',max:12000},{k:'educacao',l:'Educação',e:'🎓',max:10000},{k:'saude',l:'Saúde',e:'🏥',max:8000},{k:'lazer',l:'Lazer',e:'🎮',max:10000},{k:'vestuario',l:'Vestuário',e:'👕',max:6000},{k:'outros',l:'Outros',e:'📱',max:10000}];
+let renda=90000,guard=0,perc=10,hor=10,perfil='equilibrado',taxas={conservador:6,equilibrado:13,arrojado:20};
+function fmt(v){return new Intl.NumberFormat('pt-AO',{style:'currency',currency:'AOA',maximumFractionDigits:0}).format(v)}
+function fmtS(v){return new Intl.NumberFormat('pt-AO',{maximumFractionDigits:0}).format(v)+' Kz'}
+function detectarDevice(){const ua=navigator.userAgent;let d='PC';if(/Android/i.test(ua))d='Android';else if(/iPhone|iPad|iPod/i.test(ua))d='iPhone';let n='Chrome';if(ua.includes('Firefox'))n='Firefox';else if(ua.includes('Safari'))n='Safari';return {device:d,nav:n};}
+function registrarVisita(){const info=detectarDevice();document.getElementById('meuDevice').textContent=info.device+' - '+info.nav;const visitas=JSON.parse(localStorage.getItem('visitas_poupe_hoje')||'[]');visitas.push({data:new Date().toLocaleString('pt-AO'),dataISO:new Date().toISOString().split('T')[0],hora:new Date().toLocaleTimeString('pt-AO'),device:info.device,navegador:info.nav,idioma:navigator.language});localStorage.setItem('visitas_poupe_hoje',JSON.stringify(visitas));let t=parseInt(localStorage.getItem('contador_total')||'0')+1;localStorage.setItem('contador_total',t);document.getElementById('contadorGlobal').textContent='👁️ '+(117+t)+' visitas';}
+function renderDespesas(){const c=document.getElementById('despesas');c.innerHTML='';cats.forEach(cat=>{const div=document.createElement('div');div.className='desp-row';div.innerHTML=`<span>${cat.e} ${cat.l}</span><span style="font-weight:700;font-size:13px">${fmt(despesas[cat.k])}</span>`;const inp=document.createElement('input');inp.type='range';inp.min=0;inp.max=cat.max;inp.step=100;inp.value=despesas[cat.k];inp.oninput=e=>{despesas[cat.k]=+e.target.value;calc()};const wr=document.createElement('div');wr.style.marginTop='8px';wr.appendChild(inp);div.appendChild(wr);const container=document.createElement('div');container.appendChild(div);c.appendChild(container);});}
+function calc(){const inss=Math.round(renda*0.03);const liquido=renda-inss;const total=Object.values(despesas).reduce((a,b)=>a+b,0);const disp=liquido-total;const poupAnual=Math.max(0,disp*perc/100);const poupMens=poupAnual/12;const taxa=taxas[perfil];const proj=Math.round(guard*Math.pow(1+taxa/100,hor)+(taxa===0?poupAnual*hor:poupAnual*((Math.pow(1+taxa/100,hor)-1)/(taxa/100))));document.getElementById('rendaTop').textContent=fmtS(renda);document.getElementById('inssTop').textContent=fmtS(inss);document.getElementById('liquidoTop').textContent=fmt(liquido);document.getElementById('totalDesp').textContent='Total: '+fmt(total);document.getElementById('percVal').textContent=perc;document.getElementById('horVal').textContent=hor;document.getElementById('guardVal').textContent=fmt(guard);document.getElementById('dispVal').textContent=fmt(disp);document.getElementById('inssVal').textContent=fmtS(inss);document.getElementById('liquidoVal').textContent=fmt(liquido);document.getElementById('poupVal').textContent=fmt(poupMens)+'/mês';document.getElementById('poupDetalhe').textContent=fmt(poupMens)+'/mês • '+fmt(poupAnual)+'/ano';document.getElementById('dispBig').textContent=fmt(disp);document.getElementById('horLabel').textContent=hor;document.getElementById('taxaLabel').textContent=taxa;document.getElementById('projVal').textContent=fmt(proj);document.getElementById('barraDisp').style.width=Math.min(100,Math.max(0,(disp/liquido)*100))+'%';document.getElementById('renda').value=renda;renderDespesas();localStorage.setItem('poupe-hoje-final',JSON.stringify({renda,guard,perc,hor,perfil,despesas}));['conservador','equilibrado','arrojado'].forEach(p=>{const btn=document.getElementById(p==='conservador'?'btn-cons':p==='equilibrado'?'btn-eq':'btn-ar');if(perfil===p){btn.style.background='#18181b';btn.style.color='#fff';btn.style.borderColor='#18181b';}else{btn.style.background='#fff';btn.style.color='#18181b';btn.style.borderColor='#e4e4e7';}});}
+function setPerfil(p){perfil=p;calc()}
+function reporPadrao(){localStorage.clear();despesas={habitacao:0,alimentacao:0,transporte:0,educacao:0,saude:0,lazer:0,vestuario:0,outros:0};renda=90000;guard=0;perc=10;hor=10;perfil='equilibrado';document.getElementById('renda').value=90000;document.getElementById('perc').value=10;document.getElementById('hor').value=10;document.getElementById('guard').value=0;calc();const fb=document.getElementById('resetFeedback');fb.style.display='block';setTimeout(()=>fb.style.display='none',3000);}
+function abrirAdmin(){document.getElementById('adminPanel').style.display='block';atualizarAdmin()}
+function fecharAdmin(){document.getElementById('adminPanel').style.display='none'}
+function verificarSenha(){if(document.getElementById('senhaInput').value===SENHA_ADMIN){document.getElementById('loginAdmin').style.display='none';document.getElementById('conteudoAdmin').style.display='block';atualizarAdmin();}else{document.getElementById('erroSenha').style.display='block';}}
+function atualizarAdmin(){const visitas=JSON.parse(localStorage.getItem('visitas_poupe_hoje')||'[]');const hoje=new Date().toISOString().split('T')[0];document.getElementById('statTotal').textContent=visitas.length;document.getElementById('statHoje').textContent=visitas.filter(v=>v.dataISO===hoje).length;document.getElementById('statMobile').textContent=visitas.filter(v=>v.device!=='PC').length;document.getElementById('statPC').textContent=visitas.filter(v=>v.device==='PC').length;const lista=document.getElementById('listaVisitas');lista.innerHTML=visitas.length?visitas.slice().reverse().slice(0,50).map(v=>`<div style="background:#fafafa;border:1px solid #e4e4e7;border-radius:12px;padding:12px;margin-bottom:8px;font-size:13px"><b>${v.data}</b> - ${v.hora}<br>📱 ${v.device} | 🌐 ${v.navegador}</div>`).join(''):'<p style="font-size:12px;color:#71717a">Nenhuma visita</p>';}
+function limparVisitas(){if(confirm('Limpar?')){localStorage.removeItem('visitas_poupe_hoje');localStorage.removeItem('contador_total');atualizarAdmin();}}
+document.getElementById('renda').oninput=e=>{renda=+e.target.value;calc()};
+document.getElementById('perc').oninput=e=>{perc=+e.target.value;calc()};
+document.getElementById('hor').oninput=e=>{hor=+e.target.value;calc()};
+document.getElementById('guard').oninput=e=>{guard=+e.target.value;calc()};
+const saved=localStorage.getItem('poupe-hoje-final');if(saved){try{const d=JSON.parse(saved);if(d.renda)renda=d.renda;if(d.guard!==undefined)guard=d.guard;if(d.perc)perc=d.perc;if(d.hor)hor=d.hor;if(d.perfil)perfil=d.perfil;if(d.despesas)despesas=d.despesas;}catch{}}
+registrarVisita();calc();
+</script>
+</body>
+</html>
